@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f5f5f5; /* Off-white background */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* White Card Wrapper Container */
+.attendance-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Header & Title Layout */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.header i {
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #007bff;
+    display: inline-block;
+    margin-bottom: 30px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Info Metrics Group */
+.info {
+    margin-bottom: 40px;
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+.info p {
+    font-size: 16px;
+    font-weight: 500;
+    color: #555555;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between; /* Keeps titles and values separated cleanly */
+}
+
+.info p:last-child {
+    margin-bottom: 0;
+}
+
+.info strong {
+    color: #333333;
+}
+
+/* Action Controls button styling */
+.clock-btn {
+    width: 100%;
+    height: 60px;
+    border: none;
+    border-radius: 15px;
+    background: #3ba1e7; /* Sky blue branding matching design doc */
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(59, 161, 231, 0.2);
+    transition: background 0.2s ease;
+}
+
+.clock-btn:hover {
+    background: #258cd1;
+}
+
+.completed {
+    width: 100%;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
