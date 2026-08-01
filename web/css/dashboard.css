@@ -1,0 +1,222 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 28 Jun 2026, 10:09:59 am
+    Author     : ASUS
+*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f2f2f2;
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+
+.phone-container{
+    width:100%;
+    max-width:450px;
+    min-height:100vh;
+    background:#ffffff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:
+        0 0 20px rgba(0,0,0,0.1);
+}
+
+.header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    border-bottom:
+        1px solid #cccccc;
+    padding-bottom:10px;
+}
+
+.header h2{
+    font-size:32px;
+}
+
+.header p{
+    font-size:18px;
+    margin-top:5px;
+}
+
+.menu-btn{
+
+    border:none;
+    background:none;
+    font-size:28px;
+    cursor:pointer;
+}
+
+.menu{
+
+    display:none;
+    margin-bottom:20px;
+}
+
+.menu a{
+
+    display:block;
+    padding:10px;
+    text-decoration:none;
+    color:#333;
+}
+
+.dashboard-card{
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:black;
+    background:#d9d9d9;
+    border-radius:20px;
+    height:140px;
+    margin-bottom:25px;
+    transition:0.3s;
+}
+
+.dashboard-card:hover{
+    transform:scale(1.03);
+    background:#cfcfcf;
+}
+
+.dashboard-card i{
+    font-size:45px;
+    margin-bottom:10px;
+}
+
+.dashboard-card h3{
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.dashboard-card p,
+.dashboard-card span{
+    font-size:18px;
+}
+
+@media(max-width:600px){
+
+    .header h2{
+        font-size:26px;
+    }
+    .dashboard-card{
+        height:120px;
+    }
+    .dashboard-card h3{
+        font-size:22px;
+    }
+    .dashboard-card i{
+        font-size:35px;
+    }
+}
+
+.action-button{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:20px;
+    background:#d9d9d9;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.action-button:hover{
+    background:#cfcfcf;
+}
+
+.danger{
+    background:#ef4444;
+    color:white;
+}
+
+.back-link{
+    display:block;
+    text-align:center;
+    text-decoration:none;
+    color:#333;
+}
+
+/* ... Keep all your existing dashboard CSS styles completely unchanged above ... */
+
+/* New Action Button section styling */
+.action-section {
+    margin-top: 30px;
+    padding-top: 5px;
+    width: 100%;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+/* Red Danger System Variant */
+.danger-btn {
+    background: #dc3545; /* Clean system warning red color */
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.15);
+}
+
+.danger-btn:hover {
+    background: #bd2130;
+    transform: translateY(-1px);
+}
+
+.danger-btn:active {
+    transform: translateY(0);
+}
+
+.dropdown-menu {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #f5f5f5;
+}
