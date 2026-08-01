@@ -2,14 +2,19 @@
 FROM eclipse-temurin:17-jdk AS builder
 WORKDIR /app
 
-# Install Ant
-RUN apt-get update && apt-get install -y ant
+# Install Ant and curl
+RUN apt-get update && apt-get install -y ant curl
 
-# Copy all repository files (including the crucial nbproject folder)
+# Download the missing NetBeans CopyLibs JAR file
+RUN mkdir -p /opt/netbeans/extra && \
+    curl -sSL -o /opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar \
+    https://repo1.maven.org/maven2/org/netbeans/external/org-netbeans-modules-java-j2seproject-copylibstask/RELEASE120/org-netbeans-modules-java-j2seproject-copylibstask-RELEASE120.jar
+
+# Copy all repository files
 COPY . .
 
-# NetBeans' build target is 'default' or 'dist'
-RUN ant dist
+# Run ant dist while passing the required CopyLibs property path
+RUN ant -Dlibs.CopyLibs.classpath=/opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar dist
 
 # Stage 2: Deploy to Tomcat 9
 FROM tomcat:9-jdk17-corretto
@@ -18,8 +23,7 @@ WORKDIR /usr/local/tomcat
 # Clean out default Tomcat sample apps
 RUN rm -rf webapps/*
 
-# NetBeans puts the generated WAR file in /app/dist/
-# We copy and rename it to ROOT.war so Tomcat serves it on the root URL
+# Copy generated WAR file to Tomcat as ROOT.war
 COPY --from=builder /app/dist/*.war webapps/ROOT.war
 
 EXPOSE 8080
