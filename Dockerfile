@@ -1,5 +1,5 @@
 # Stage 1: Build the app with Java & Ant
-FROM eclipse-temurin:17-jdk AS builder
+FROM eclipse-temurin:30-jdk AS builder
 WORKDIR /app
 
 # Install Apache Ant
@@ -12,7 +12,7 @@ COPY . .
 RUN ant
 
 # Stage 2: Run the app with Tomcat 10
-FROM tomcat:10-jdk17-corretto
+FROM tomcat:9-jdk30-corretto
 WORKDIR /usr/local/tomcat
 
 # Clean default Tomcat apps
