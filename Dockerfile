@@ -1,19 +1,22 @@
 # Stage 1: Build the app with Java & Ant
-FROM freeleaves/ant:latest AS builder
+FROM eclipse-temurin:17-jdk AS builder
 WORKDIR /app
 
-# Copy source code and build using Ant
-COPY . .
-RUN ant build   # Adjust target name if needed
+# Install Apache Ant
+RUN apt-get update && apt-get install -y ant
 
-# Stage 2: Run Tomcat 9 with JDK 21
-FROM tomcat:9.0-jdk21-openjdk-slim
+# Copy project files and compile using Ant
+COPY . .
+RUN ant build   # Replace 'build' with your specific target if different (e.g., ant war)
+
+# Stage 2: Run the app with Tomcat 10
+FROM tomcat:10-jdk17-corretto
 WORKDIR /usr/local/tomcat
 
-# Clean default apps
+# Clean default Tomcat apps
 RUN rm -rf webapps/*
 
-# Copy your built .war file to webapps/ROOT.war
+# Copy the built .war file to Tomcat (renamed to ROOT.war for root path routing)
 COPY --from=builder /app/dist/*.war webapps/ROOT.war
 
 EXPOSE 8080
