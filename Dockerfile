@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y ant
 COPY . .
 
 # Run your build (change 'war' to your actual target name)
-RUN ant war
+RUN ant
 
 # Stage 2: Run the app with Tomcat 10
 FROM tomcat:10-jdk17-corretto
