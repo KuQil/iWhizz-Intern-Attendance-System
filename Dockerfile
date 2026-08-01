@@ -1,24 +1,25 @@
-# Stage 1: Build the WAR file using a real JDK image (Java 17)
+# Stage 1: Build using Java 17 and Apache Ant
 FROM eclipse-temurin:17-jdk AS builder
 WORKDIR /app
 
-# Install Apache Ant
+# Install Ant
 RUN apt-get update && apt-get install -y ant
 
-# Copy your source code
+# Copy all repository files (including the crucial nbproject folder)
 COPY . .
 
-# Run your Ant task to create the WAR file (change 'war' if your build.xml target is named 'dist' or 'build')
-RUN ant war
+# NetBeans' build target is 'default' or 'dist'
+RUN ant dist
 
-# Stage 2: Deploy to Tomcat 9 (matches your local environment)
+# Stage 2: Deploy to Tomcat 9
 FROM tomcat:9-jdk17-corretto
 WORKDIR /usr/local/tomcat
 
-# Clean default apps
+# Clean out default Tomcat sample apps
 RUN rm -rf webapps/*
 
-# Copy the built WAR file to Tomcat as ROOT.war
+# NetBeans puts the generated WAR file in /app/dist/
+# We copy and rename it to ROOT.war so Tomcat serves it on the root URL
 COPY --from=builder /app/dist/*.war webapps/ROOT.war
 
 EXPOSE 8080
