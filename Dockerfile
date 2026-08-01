@@ -1,24 +1,24 @@
-# Stage 1: Build the app with Java & Ant
-FROM eclipse-temurin:30-jdk AS builder
+# Stage 1: Build the WAR file using a real JDK image (Java 17)
+FROM eclipse-temurin:17-jdk AS builder
 WORKDIR /app
 
 # Install Apache Ant
 RUN apt-get update && apt-get install -y ant
 
-# Copy project files
+# Copy your source code
 COPY . .
 
-# Run your build (change 'war' to your actual target name)
-RUN ant
+# Run your Ant task to create the WAR file (change 'war' if your build.xml target is named 'dist' or 'build')
+RUN ant war
 
-# Stage 2: Run the app with Tomcat 10
-FROM tomcat:9-jdk30-corretto
+# Stage 2: Deploy to Tomcat 9 (matches your local environment)
+FROM tomcat:9-jdk17-corretto
 WORKDIR /usr/local/tomcat
 
-# Clean default Tomcat apps
+# Clean default apps
 RUN rm -rf webapps/*
 
-# Copy the built .war file (adjust /app/dist/*.war if your output folder is different, e.g., /app/build/*.war)
+# Copy the built WAR file to Tomcat as ROOT.war
 COPY --from=builder /app/dist/*.war webapps/ROOT.war
 
 EXPOSE 8080
