@@ -5,9 +5,11 @@ WORKDIR /app
 # Install Apache Ant
 RUN apt-get update && apt-get install -y ant
 
-# Copy project files and compile using Ant
+# Copy project files
 COPY . .
-RUN ant build   # Replace 'build' with your specific target if different (e.g., ant war)
+
+# Run your build (change 'war' to your actual target name)
+RUN ant war
 
 # Stage 2: Run the app with Tomcat 10
 FROM tomcat:10-jdk17-corretto
@@ -16,7 +18,7 @@ WORKDIR /usr/local/tomcat
 # Clean default Tomcat apps
 RUN rm -rf webapps/*
 
-# Copy the built .war file to Tomcat (renamed to ROOT.war for root path routing)
+# Copy the built .war file (adjust /app/dist/*.war if your output folder is different, e.g., /app/build/*.war)
 COPY --from=builder /app/dist/*.war webapps/ROOT.war
 
 EXPOSE 8080
