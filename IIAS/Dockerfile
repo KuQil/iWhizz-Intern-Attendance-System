@@ -5,19 +5,15 @@ WORKDIR /app
 # Install Ant and curl
 RUN apt-get update && apt-get install -y ant curl
 
-# Download the missing NetBeans CopyLibs JAR file
-RUN mkdir -p /opt/netbeans/extra && \
-    curl -sSL -o /opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar \
-    https://repo1.maven.org/maven2/org/netbeans/external/org-netbeans-modules-java-j2seproject-copylibstask/RELEASE120/org-netbeans-modules-java-j2seproject-copylibstask-RELEASE120.jar
+# Download updated NetBeans CopyLibs JARs directly into Ant's global library folder
+RUN curl -sSL -o /usr/share/ant/lib/org-netbeans-modules-java-j2seproject-copylibstask.jar \
+    https://repo1.maven.org/maven2/org/netbeans/external/org-netbeans-modules-java-j2seproject-copylibstask/RELEASE180/org-netbeans-modules-java-j2seproject-copylibstask-RELEASE180.jar
 
 # Copy all project files
 COPY . .
 
-# Pass BOTH CopyLibs classpath and prop-version flags to Ant
-RUN ant \
-    -Dlibs.CopyLibs.classpath=/opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar \
-    -Dlibs.CopyLibs.prop-version=3.0 \
-    dist
+# Build the WAR file (Ant now has CopyLibs loaded globally)
+RUN ant dist
 
 # Stage 2: Deploy to Tomcat 9
 FROM tomcat:9-jdk17-corretto
