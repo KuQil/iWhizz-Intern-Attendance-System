@@ -10,11 +10,14 @@ RUN mkdir -p /opt/netbeans/extra && \
     curl -sSL -o /opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar \
     https://repo1.maven.org/maven2/org/netbeans/external/org-netbeans-modules-java-j2seproject-copylibstask/RELEASE120/org-netbeans-modules-java-j2seproject-copylibstask-RELEASE120.jar
 
-# Copy all project files (including nbproject and web folders)
+# Copy all project files
 COPY . .
 
-# Build the WAR file
-RUN ant -Dlibs.CopyLibs.classpath=/opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar dist
+# Pass BOTH CopyLibs classpath and prop-version flags to Ant
+RUN ant \
+    -Dlibs.CopyLibs.classpath=/opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar \
+    -Dlibs.CopyLibs.prop-version=3.0 \
+    dist
 
 # Stage 2: Deploy to Tomcat 9
 FROM tomcat:9-jdk17-corretto
