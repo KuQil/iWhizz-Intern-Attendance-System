@@ -1,17 +1,17 @@
-# Stage 1: Build using standard Java 17 and Apache Ant
+# Stage 1: Build using Java 17 and Apache Ant
 FROM eclipse-temurin:17-jdk AS builder
 WORKDIR /app
 
-# Install Ant
-RUN apt-get update && apt-get install -y ant
+# Copy Tomcat libraries from official Tomcat image to provide servlet-api.jar
+COPY --from=tomcat:9-jdk17-corretto /usr/local/tomcat/lib /opt/tomcat/lib
 
 # Copy project source code
 COPY . .
 
-# Build the WAR file directly using standard JDK/Ant commands (bypasses NetBeans completely)
-RUN mkdir -p web/WEB-INF/classes && \
-    javac -d web/WEB-INF/classes $(find src -name "*.java") && \
-    mkdir -p dist && \
+# Compile Java sources including Tomcat libraries and local WEB-INF/lib JARs in classpath
+RUN mkdir -p web/WEB-INF/classes dist && \
+    CP=$(echo /opt/tomcat/lib/*.jar web/WEB-INF/lib/*.jar | tr ' ' ':') && \
+    javac -cp "$CP" -d web/WEB-INF/classes $(find src -name "*.java") && \
     jar cvf dist/app.war -C web .
 
 # Stage 2: Deploy to Tomcat 9
