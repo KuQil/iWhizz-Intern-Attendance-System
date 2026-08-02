@@ -1,19 +1,17 @@
-# Stage 1: Build using Java 17 and Apache Ant
-FROM eclipse-temurin:17-jdk AS builder
+# Stage 1: Build using Official NetBeans + JDK 17
+FROM apache/netbeans:17-jdk17 AS builder
 WORKDIR /app
 
-# Install Ant
-RUN apt-get update && apt-get install -y ant
+# Switch to root user to copy project files
+USER root
 
-# Copy all project files
+# Copy project source code
 COPY . .
 
-# Bypass NetBeans IDE-specific CopyLibs task by compiling classes directly and calling default target
-RUN ant -Dno.deps=true -Dlibs.CopyLibs.classpath= compile
-
-# Package compiled files into a WAR manually if NetBeans' dist target fails on CopyLibs
-RUN ant -Dno.deps=true -Dlibs.CopyLibs.classpath= -Ddo.archive=true dist || \
-    (mkdir -p dist && jar cvf dist/app.war -C web .)
+# Run ant dist using NetBeans' installed CopyLibs task library
+RUN ant \
+    -Dlibs.CopyLibs.classpath=/usr/lib/netbeans/java/ant/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar \
+    dist
 
 # Stage 2: Deploy to Tomcat 9
 FROM tomcat:9-jdk17-corretto
@@ -22,7 +20,7 @@ WORKDIR /usr/local/tomcat
 # Clean default Tomcat apps
 RUN rm -rf webapps/*
 
-# Copy compiled WAR to Tomcat as ROOT.war
+# Copy compiled WAR file to Tomcat as ROOT.war
 COPY --from=builder /app/dist/*.war webapps/ROOT.war
 
 EXPOSE 8080
