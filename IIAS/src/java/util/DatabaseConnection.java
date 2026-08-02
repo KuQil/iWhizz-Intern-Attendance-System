@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://iwhizztech.com:3306/iias";
+    private static final String URL = "jdbc:mysql://iwhizztech.com:3306/iias?useSSL=false&allowPublicKeyRetrieval=true";
     private static final String USER = "iias";
     private static final String PASSWORD = "N0rmP4ss";
 
