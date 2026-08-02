@@ -5,25 +5,29 @@ WORKDIR /app
 # Install Ant and curl
 RUN apt-get update && apt-get install -y ant curl
 
-# Download NetBeans CopyLibs RELEASE180 (has copyfiles task)
-RUN mkdir -p /opt/netbeans/extra && \
-    curl -sSL -o /opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar \
-    https://repo1.maven.org/maven2/org/netbeans/external/org-netbeans-modules-java-j2seproject-copylibstask/RELEASE180/org-netbeans-modules-java-j2seproject-copylibstask-RELEASE180.jar
+# Create directory for NetBeans Ant tasks
+RUN mkdir -p /opt/netbeans/extra
 
-# Copy all project files
+# Download both CopyLibs and CopyFiles task JARs from Maven Central
+RUN curl -sSL -o /opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar \
+    https://repo1.maven.org/maven2/org/netbeans/external/org-netbeans-modules-java-j2seproject-copylibstask/RELEASE180/org-netbeans-modules-java-j2seproject-copylibstask-RELEASE180.jar && \
+    curl -sSL -o /opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copyfilestask.jar \
+    https://repo1.maven.org/maven2/org/netbeans/external/org-netbeans-modules-java-j2seproject-copyfilestask/RELEASE180/org-netbeans-modules-java-j2seproject-copyfilestask-RELEASE180.jar
+
+# Copy project source code
 COPY . .
 
-# Pass the property AND let Ant use RELEASE180
-RUN ant -Dlibs.CopyLibs.classpath=/opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar dist
+# Run ant dist passing BOTH JARs in the classpath (separated by a colon)
+RUN ant -Dlibs.CopyLibs.classpath=/opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar:/opt/netbeans/extra/org-netbeans-modules-java-j2seproject-copyfilestask.jar dist
 
 # Stage 2: Deploy to Tomcat 9
 FROM tomcat:9-jdk17-corretto
 WORKDIR /usr/local/tomcat
 
-# Clean out default Tomcat sample apps
+# Clean default Tomcat apps
 RUN rm -rf webapps/*
 
-# Copy generated WAR file to Tomcat as ROOT.war
+# Copy compiled WAR to Tomcat as ROOT.war
 COPY --from=builder /app/dist/*.war webapps/ROOT.war
 
 EXPOSE 8080
