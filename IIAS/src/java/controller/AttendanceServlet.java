@@ -4,6 +4,9 @@
  */
 package controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
 import dao.AttendanceDAO;
 import dao.GeofenceDAO;
 import java.io.File;
@@ -19,6 +22,7 @@ import util.HaversineUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalTime;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,15 +33,26 @@ import javax.servlet.http.HttpSession;
 
 public class AttendanceServlet extends HttpServlet {
 
+    private Cloudinary cloudinary;
+
+    @Override
+    public void init() throws ServletException {
+        // Reads API credentials set in Render Environment Variables
+        cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", "hzqgfukw",
+                "api_key", "763327683493159",
+                "api_secret", "9kn-XfK8pM-Yr5f7-GTgwWk85Vc")
+        );
+    }
+
     //5.334279365266907, 103.14771422427407 plt
     //5.734034836476247, 102.49390592638133 ijt
     //5.4131091113581755, 103.0854658632978 oma
     //5.410929577902006, 103.08854473100098 ibh12
     //5.738359662486741, 102.50908217108032 hjt
-    
     private static final double OFFICE_LAT = 5.734034836476247;
     private static final double OFFICE_LON = 102.49390592638133;
-    private static final int ALLOWED_RADIUS = 30; 
+    private static final int ALLOWED_RADIUS = 30;
     private static final String UPLOAD_DIR = "C:/Users/Win10/Desktop/WebDev/IIAS/uploads/selfies";
 
     @Override
@@ -76,15 +91,14 @@ public class AttendanceServlet extends HttpServlet {
 
         // Determine Status
         String attendanceStatus = LocalTime.now().isAfter(LocalTime.parse(ConfigManager.get("clock_in_time"))) ? "late" : "present";
-        if(user.isOnField()){
+        if (user.isOnField()) {
             attendanceStatus = "Out Station";
         }
-        
 
         // Save Image
         String base64Image = request.getParameter("selfie");
         String selfiePathIn = saveSelfie(base64Image);
-        
+
         String commentIn = request.getParameter("comment");
 
         boolean success = attendanceDAO.clockIn(user.getUserId(), attendanceStatus, selfiePathIn, commentIn);
@@ -116,19 +130,18 @@ public class AttendanceServlet extends HttpServlet {
     }
 
     private String saveSelfie(String base64Image) throws IOException {
-        String imageData = base64Image.substring(base64Image.indexOf(",") + 1);
-        byte[] imageBytes = Base64.getDecoder().decode(imageData);
+        String imageUrl = null;
+        if (base64Image != null && !base64Image.trim().isEmpty()) {
 
-        File directory = new File(UPLOAD_DIR);
-        if (!directory.exists()) {
-            directory.mkdirs();
+            // Pass the Base64 string directly to Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(base64Image, ObjectUtils.emptyMap());
+
+            // Extract the secure HTTPS URL provided by Cloudinary
+            imageUrl = (String) uploadResult.get("secure_url");
+
+            // Save `imageUrl` into your Aiven database table (e.g. `selfie_path_in`)
+            // dao.saveAttendanceSelfie(userId, imageUrl);
         }
-
-        String fileName = System.currentTimeMillis() + ".jpg";
-        try (FileOutputStream fos = new FileOutputStream(new File(directory, fileName))) {
-            fos.write(imageBytes);
-        }
-
-        return "uploads/selfies/" + fileName;
+        return imageUrl;
     }
 }
