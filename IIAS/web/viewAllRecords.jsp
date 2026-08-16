@@ -93,7 +93,7 @@
                                     <td><%= (attendance.getClockIn() != null) ? attendance.getClockIn().toString().substring(11, 16) : "-"%></td>
                                     <td>
                                         <% if (imgIn != null && !imgIn.trim().isEmpty()) {%>
-                                        <img src="${pageContext.request.contextPath}/<%= imgIn%>" alt="Selfie" class="selfie-thumb" onclick="window.open(this.src)">
+                                        <img src="<%= imgIn%>" alt="Selfie" class="selfie-thumb" onclick="window.open(this.src)">
                                         <% } else { %>
                                         <span class="no-img">No Image</span>
                                         <% }%>
