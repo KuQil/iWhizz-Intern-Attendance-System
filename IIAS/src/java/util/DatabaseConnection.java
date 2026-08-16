@@ -16,7 +16,7 @@ public class DatabaseConnection {
     private static final String user = System.getenv("DB_USER");
     private static final String pass = System.getenv("DB_PASS");
 
-    private static final String URL = "jdbc:mysql://" + host + ":" + port + "/" + dbName + "?serverTimezone=Asia/Kuala_Lumpur&useSSL=true&trustServerCertificate=true";
+    private static final String URL = "jdbc:mysql://" + host + ":" + port + "/" + dbName + "?useSSL=true&trustServerCertificate=true";
 
     public static Connection getConnection() {
 
