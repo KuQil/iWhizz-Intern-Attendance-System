@@ -108,7 +108,7 @@
                                     <td><%= (attendance.getClockOut() != null) ? attendance.getClockOut() : "-"%></td>
                                     <td>
                                         <% if (imgOut != null && !imgOut.trim().isEmpty()) {%>
-                                        <img src="<%= request.getContextPath() %>/<%= imgOut%>" alt="Selfie Out" class="selfie-thumb" onclick="window.open(this.src)">
+                                        <img src="<%= imgOut%>" alt="Selfie Out" class="selfie-thumb" onclick="window.open(this.src)">
                                         <% } else { %>
                                         <span class="no-img">No Image</span>
                                         <% }%>
