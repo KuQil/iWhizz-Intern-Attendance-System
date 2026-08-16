@@ -39,9 +39,9 @@ public class AttendanceServlet extends HttpServlet {
     public void init() throws ServletException {
         // Reads API credentials set in Render Environment Variables
         cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "hzqgfukw",
-                "api_key", "763327683493159",
-                "api_secret", "9kn-XfK8pM-Yr5f7-GTgwWk85Vc")
+                "cloud_name", System.getenv("CLOUDINARY_CLOUD_NAME"),
+                "api_key", System.getenv("CLOUDINARY_API_KEY"),
+                "api_secret", System.getenv("CLOUDINARY_API_SECRET")
         );
     }
 
