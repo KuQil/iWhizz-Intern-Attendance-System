@@ -9,9 +9,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://iwhizztech.com:3306/iias?useSSL=false&allowPublicKeyRetrieval=true";
-    private static final String USER = "iias";
-    private static final String PASSWORD = "N0rmP4ss";
+
+    String host = System.getenv("DB_HOST");
+    String port = System.getenv("DB_PORT");
+    String dbName = System.getenv("DB_NAME");
+    String user = System.getenv("DB_USER");
+    String pass = System.getenv("DB_PASS");
+
+    private static final String URL = "jdbc:mysql://" + host + ":" + port + "/" + dbName + "?useSSL=true&trustServerCertificate=true";
 
     public static Connection getConnection() {
 
@@ -22,8 +27,8 @@ public class DatabaseConnection {
 
             connection = DriverManager.getConnection(
                     URL,
-                    USER,
-                    PASSWORD
+                    user,
+                    pass
             );
 
         } catch (ClassNotFoundException | SQLException e) {
