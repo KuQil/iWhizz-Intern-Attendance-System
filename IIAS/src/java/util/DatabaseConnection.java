@@ -10,11 +10,11 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    String host = System.getenv("DB_HOST");
-    String port = System.getenv("DB_PORT");
-    String dbName = System.getenv("DB_NAME");
-    String user = System.getenv("DB_USER");
-    String pass = System.getenv("DB_PASS");
+    private static final String host = System.getenv("DB_HOST");
+    private static final String port = System.getenv("DB_PORT");
+    private static final String dbName = System.getenv("DB_NAME");
+    private static final String user = System.getenv("DB_USER");
+    private static final String pass = System.getenv("DB_PASS");
 
     private static final String URL = "jdbc:mysql://" + host + ":" + port + "/" + dbName + "?useSSL=true&trustServerCertificate=true";
 
