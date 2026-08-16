@@ -14,7 +14,7 @@
     Attendance attendance = dao.getTodayAttendance(user.getUserId());
     
     if (clockOutPrevSession != null){
-        attendance = dao.clockOutCheck(user.getUserId());
+        //attendance = dao.clockOutCheck(user.getUserId());
     }
     
 
@@ -72,9 +72,7 @@
                     <p><strong>Location Check:</strong> <span id="locationStatus">Waiting...</span></p>
                 </div>
 
-                <% if (attendance != null && (clockOutPrevSession == null && 
-                        attendance.getClockIn() == null && "Out Station".equals(attendance.getAttendanceStatus()) ||
-                        "Absent".equals(attendance.getAttendanceStatus()))) { %>
+                <% if (attendance != null && attendance.getClockIn() == null) { %>
 
                 <form id="clockInForm" action="AttendanceServlet" method="post">
                     <input type="hidden" name="action" value="clockin">
