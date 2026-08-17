@@ -31,6 +31,13 @@ public class LoginServlet extends HttpServlet {
         //password hash
         //String hashedPassword = HashUtil.hashPassword(password);
 
+                LocalTime currentTime = LocalTime.now(ZoneId.of("Asia/Kuala_Lumpur"));
+LocalTime expectedTime = LocalTime.parse(ConfigManager.get("clock_in_time"));
+
+System.out.println("DEBUG -> Current MY Time: " + currentTime);
+System.out.println("DEBUG -> Config Expected Time: " + expectedTime);
+System.out.println("DEBUG -> Is Late? " + currentTime.isAfter(expectedTime));
+
         UserDAO userDAO = new UserDAO();
 
         User user = userDAO.login(username, password);
