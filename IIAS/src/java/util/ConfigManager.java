@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class ConfigManager {
     
-    private static final String CONFIG_FILE = "C:/Users/Win10/Desktop/WebDev/IIAS/conf/system_config.properties";
+    private static final String CONFIG_FILE = "IIAS/conf/system_config.properties";
     private static Properties properties = new Properties();
 
     static {
