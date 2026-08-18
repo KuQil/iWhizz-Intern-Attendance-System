@@ -1,41 +1,28 @@
 package util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigManager {
-    
-    private static final String CONFIG_FILE = "IIAS/conf/system_config.properties";
-    private static Properties properties = new Properties();
+
+    private static final String CONFIG_FILE = "system_config.properties";
+    private static final Properties properties = new Properties();
 
     static {
         loadProperties();
     }
 
     private static void loadProperties() {
-        File file = new File(CONFIG_FILE);
-        try {
-            if (!file.exists()) {
-                // Ensure parent directory exists before creating the file
-                if (file.getParentFile() != null && !file.getParentFile().exists()) {
-                    file.getParentFile().mkdirs();
-                }
-
-                file.createNewFile();
-                // Set default values if file is newly created
-                properties.setProperty("clock_in_time", "09:00");
-                properties.setProperty("clock_out_time", "18:00");
-                properties.setProperty("geofence_lat", "6.1254");
-                properties.setProperty("geofence_lng", "102.2381");
-                properties.setProperty("geofence_radius_meters", "100");
-                saveProperties();
+        // Read directly from the application classpath (WEB-INF/classes or src/resources)
+        try (InputStream input = ConfigManager.class.getClassLoader().getResourceAsStream(CONFIG_FILE)) {
+            if (input == null) {
+                System.err.println("CRITICAL: Unable to find " + CONFIG_FILE + " in classpath.");
+                // Fallback defaults if file is completely missing
+                properties.setProperty("clock_in_time", "08:30");
+                properties.setProperty("clock_out_time", "17:00");
             } else {
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    properties.load(fis);
-                }
+                properties.load(input);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,17 +34,8 @@ public class ConfigManager {
         return properties.getProperty(key);
     }
 
-    // Update a setting and save to file
-    public static void set(String key, String value) {
-        properties.setProperty(key, value);
-        saveProperties();
-    }
-
-    private static void saveProperties() {
-        try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
-            properties.store(fos, "Iwhizz System Configuration");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    // Optional default fallback getter
+    public static String get(String key, String defaultValue) {
+        return properties.getProperty(key, defaultValue);
     }
 }
