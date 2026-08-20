@@ -18,9 +18,6 @@ public class ConfigManager {
         try (InputStream input = ConfigManager.class.getClassLoader().getResourceAsStream(CONFIG_FILE)) {
             if (input == null) {
                 System.err.println("CRITICAL: Unable to find " + CONFIG_FILE + " in classpath.");
-                // Fallback defaults if file is completely missing
-                properties.setProperty("clock_in_time", "08:30");
-                properties.setProperty("clock_out_time", "17:00");
             } else {
                 properties.load(input);
             }
