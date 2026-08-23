@@ -14,7 +14,7 @@
     Attendance attendance = dao.getTodayAttendance(user.getUserId());
     
     if (clockOutPrevSession != null){
-        //attendance = dao.clockOutCheck(user.getUserId());
+        attendance = dao.clockOutCheck(user.getUserId());
     }
     
 
