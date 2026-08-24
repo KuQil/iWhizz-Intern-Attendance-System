@@ -14,7 +14,7 @@
     Attendance attendance = dao.getTodayAttendance(user.getUserId());
     
     if (clockOutPrevSession != null){
-        //attendance = dao.clockOutCheck(user.getUserId());
+        attendance = dao.clockOutCheck(user.getUserId());
     }
     
 
@@ -72,7 +72,10 @@
                     <p><strong>Location Check:</strong> <span id="locationStatus">Waiting...</span></p>
                 </div>
 
-                <% if (attendance != null && attendance.getClockIn() == null) { %>
+                <% if (clockOutPrevSession == null && 
+                        attendance.getClockIn() == null && (
+                        "Out Station".equals(attendance.getAttendanceStatus()) ||
+                        "Absent".equals(attendance.getAttendanceStatus()))) { %>
 
                 <form id="clockInForm" action="AttendanceServlet" method="post">
                     <input type="hidden" name="action" value="clockin">
@@ -111,6 +114,7 @@
                     <input type="hidden" name="action" value="clockout">
                     <input type="hidden" id="latitude" name="latitude">
                     <input type="hidden" id="longitude" name="longitude">
+                    <input type="hidden" id="attID" name="attID" value="<%=attendance.getAttendanceId()%>">
 
                     <div class="camera-container">
                         <video id="video" autoplay playsinline style="width: 100%; border-radius: 8px; background: #000;"></video>
