@@ -120,7 +120,9 @@ public class AttendanceServlet extends HttpServlet {
         String base64Image = request.getParameter("selfie");
         String selfiePathOut = saveSelfie(base64Image);
 
-        boolean success = attendanceDAO.clockOut(user.getUserId(), selfiePathOut);
+        int attId = Integer.parseInt(request.getParameter("attID"));
+
+        boolean success = attendanceDAO.clockOut(selfiePathOut, attId);
         response.sendRedirect("attendance.jsp?success=" + (success ? "clockout" : "failed&error=clockoutFailed"));
     }
 
