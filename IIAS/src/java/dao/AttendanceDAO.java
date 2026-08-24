@@ -93,7 +93,7 @@ public class AttendanceDAO {
     }
 
     //   CLOCK OUT
-    public boolean clockOut(int userId, String selfiePathOut) {
+    public boolean clockOut(String selfiePathOut, int attID) {
 
         try {
 
@@ -101,14 +101,14 @@ public class AttendanceDAO {
                     = "UPDATE attendance "
                     + "SET clock_out=NOW(), "
                     + "selfie_path_out=? "
-                    + "WHERE user_id=? "
+                    + "WHERE attendance_id=? "
                     + "AND clock_out IS NULL "
                     + "AND clock_in IS NOT NULL";
 
             PreparedStatement ps = connection.prepareStatement(sql);
 
             ps.setString(1, selfiePathOut);
-            ps.setInt(2, userId);
+            ps.setInt(2, attID);
 
             int result = ps.executeUpdate();
 
@@ -228,10 +228,11 @@ public class AttendanceDAO {
 
     public Attendance clockOutCheck(int userId) {
         // Select the necessary columns (or *) directly
-        String sql = "SELECT attendance_id FROM attendance "
+        String sql = "SELECT * FROM attendance "
                 + "WHERE user_id = ? "
                 + "  AND DATE(attendance_date) < CURDATE() "
                 + "  AND clock_out IS NULL "
+                + "  AND clock_in IS NOT NULL "
                 + "  AND attendance_status <> 'On Leave'"
                 + "ORDER BY attendance_date DESC "
                 + "LIMIT 1";
@@ -243,6 +244,9 @@ public class AttendanceDAO {
                 if (rs.next()) {
                     Attendance attendance = new Attendance();
                     attendance.setAttendanceId(rs.getInt("attendance_id"));
+                    attendance.setClockIn(rs.getTimestamp("clock_in"));
+                    attendance.setClockOut(rs.getTimestamp("clock_out"));
+                    
                     return attendance;
                 }
             }
