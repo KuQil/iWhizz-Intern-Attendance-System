@@ -228,14 +228,16 @@ public class AttendanceDAO {
 
     public Attendance clockOutCheck(int userId) {
         // Select the necessary columns (or *) directly
-        String sql = "SELECT * FROM attendance "
-                + "WHERE user_id = ? "
-                + "  AND DATE(attendance_date) < CURDATE() "
-                + "  AND clock_out IS NULL "
-                + "  AND clock_in IS NOT NULL "
-                + "  AND attendance_status <> 'On Leave'"
-                + "ORDER BY attendance_date DESC "
-                + "LIMIT 1";
+        String sql = "SELECT * FROM ("
+           + "    SELECT * FROM attendance "
+           + "    WHERE user_id = ? "
+           + "      AND DATE(attendance_date) < CURDATE() "
+           + "      AND attendance_status NOT IN ('On Leave', 'Absent') "
+           + "    ORDER BY attendance_date DESC, clock_in DESC "
+           + "    LIMIT 1"
+           + ") AS latest_session "
+           + "WHERE latest_session.clock_in IS NOT NULL "
+           + "  AND latest_session.clock_out IS NULL";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userId);
 
