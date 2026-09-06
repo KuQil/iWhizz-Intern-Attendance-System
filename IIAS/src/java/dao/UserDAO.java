@@ -48,6 +48,7 @@ public class UserDAO {
                 user.setOnField(resultSet.getBoolean("is_onfield"));
                 user.setInternshipStart(resultSet.getDate("internship_start"));
                 user.setInternshipEnd(resultSet.getDate("internship_end"));
+                user.setPersonalLeaveRemaining(resultSet.getInt("personal_leave_remaining"));
             }
 
             connection.close();
