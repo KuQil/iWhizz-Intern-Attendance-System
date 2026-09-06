@@ -1,4 +1,6 @@
 <%@page import="model.User"%>
+<%@page import="dao.AttendanceDAO"%>
+<%@page import="model.Attendance"%>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -7,6 +9,11 @@
         response.sendRedirect("login.jsp");
         return;
     }
+
+    AttendanceDAO attDao = new AttendanceDAO();
+    Attendance att = attDao.getTodayAttendance(user.getUserId());
+    Attendance cocheck = attDao.clockOutCheck(user.getUserId());
+
 %>
 
 <!DOCTYPE html>
@@ -26,6 +33,7 @@
                     <h2><%= user.getFullName()%></h2>
                     <p>
                         Duty: <%= user.isOnField() ? "On-Field" : "Office"%>
+                    <div id="currentDate">--</div>
                     </p>
                 </div>
                 <button class="menu-btn" onclick="toggleMenu()">
@@ -45,8 +53,13 @@
 
             <a href="attendance.jsp" class="dashboard-card">
                 <i class="fa-regular fa-clock"></i>
+                <% if (cocheck == null && att.getClockIn() == null) { %>
                 <h3>Clock-In</h3>
-                <span id="currentTime">--</span>
+                <% } else {%>
+                <h3>Clock-Out</h3>
+                <%};%>
+
+                <div id="currentTime">--</div>
             </a>
 
             <a href="LeaveServlet" class="dashboard-card">
@@ -80,6 +93,16 @@
 
             function updateClock() {
                 let now = new Date();
+
+                // Set Date
+                document.getElementById("currentDate").innerHTML = now.toLocaleDateString([], {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Set Time
                 document.getElementById("currentTime").innerHTML = now.toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit'
