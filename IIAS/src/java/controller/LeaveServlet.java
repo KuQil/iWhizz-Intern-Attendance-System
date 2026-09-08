@@ -4,20 +4,22 @@ import dao.LeaveDAO;
 import model.LeaveApplication;
 import model.User;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
@@ -27,10 +29,17 @@ import com.cloudinary.utils.ObjectUtils;
 public class LeaveServlet extends HttpServlet {
 
     private LeaveDAO leaveDAO;
+    private Cloudinary cloudinary;
 
     @Override
     public void init() {
         leaveDAO = new LeaveDAO();
+        // Reads API credentials set in Render Environment Variables
+        cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", System.getenv("CLOUDINARY_CLOUD_NAME"),
+                "api_key", System.getenv("CLOUDINARY_API_KEY"),
+                "api_secret", System.getenv("CLOUDINARY_API_SECRET")
+        ));
     }
 
     @Override
@@ -95,16 +104,13 @@ public class LeaveServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        if (session == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
+
             response.sendRedirect("login.jsp");
             return;
+
         }
 
         String leaveType = request.getParameter("leaveType");
@@ -126,63 +132,26 @@ public class LeaveServlet extends HttpServlet {
         leave.setTotalDays(totalDays);
         leave.setReason(reason);
 
-        // Supporting Document: upload to Cloudinary if provided
+        //Supporting Documnet Upload
+        
         Part part = request.getPart("docs");
-
-        // If Medical leave, ensure attachment present (server-side check)
-        if ("Medical".equalsIgnoreCase(leaveType) && (part == null || part.getSize() == 0)) {
-            response.sendRedirect("leave.jsp?error=missing_doc");
-            return;
-        }
+        
+        Map docpath = cloudinary.uploader().upload(part, ObjectUtils.emptyMap());
 
         if (part != null && part.getSize() > 0) {
-            // Initialize Cloudinary using CLOUDINARY_URL or individual env vars
-            Cloudinary cloudinary = null;
-            String cloudUrl = System.getenv("CLOUDINARY_URL");
-            try {
-                if (cloudUrl != null && !cloudUrl.isEmpty()) {
-                    cloudinary = new Cloudinary(cloudUrl);
-                } else {
-                    String cname = System.getenv("CLOUDINARY_CLOUD_NAME");
-                    String ckey = System.getenv("CLOUDINARY_API_KEY");
-                    String csecret = System.getenv("CLOUDINARY_API_SECRET");
-                    if (cname != null && ckey != null && csecret != null) {
-                        cloudinary = new Cloudinary(ObjectUtils.asMap(
-                                "cloud_name", cname,
-                                "api_key", ckey,
-                                "api_secret", csecret
-                        ));
-                    }
-                }
 
-                if (cloudinary == null) {
-                    // Cloudinary not configured
-                    response.sendRedirect("leave.jsp?error=cloudinary_config");
-                    return;
-                }
-
-                try (InputStream input = part.getInputStream()) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> result = cloudinary.uploader().upload(input, ObjectUtils.asMap("resource_type", "auto"));
-                    if (result != null) {
-                        String secureUrl = (String) result.get("secure_url");
-                        if (secureUrl != null && !secureUrl.isEmpty()) {
-                            leave.setDocs(secureUrl);
-                        }
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Upload failed; redirect with error instead of throwing 500
-                response.sendRedirect("leave.jsp?error=failed");
-                return;
-            }
+            String uploadFolder = (String) docpath.get("secure_url");
+            
+            leave.setDocs(uploadFolder);
         }
 
-        // Personal Leave Validation
+        //Personal Leave Validation
         if ("Personal".equalsIgnoreCase(leaveType)) {
-            int remaining = leaveDAO.getRemainingPersonalLeave(user.getUserId());
+
+            int remaining
+                    = leaveDAO.getRemainingPersonalLeave(
+                            user.getUserId());
+
             if (totalDays > remaining) {
                 response.sendRedirect("leave.jsp?error=insufficient");
                 return;
@@ -210,19 +179,12 @@ public class LeaveServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        if (session == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
 
-        request.setAttribute("leaveHistory", leaveDAO.getLeaveHistory(user.getUserId()));
-        request.setAttribute("remainingLeave", leaveDAO.getRemainingPersonalLeave(user.getUserId()));
+        request.setAttribute("leaveHistory",leaveDAO.getLeaveHistory(user.getUserId()));
+
+        request.setAttribute("remainingLeave",leaveDAO.getRemainingPersonalLeave(user.getUserId()));
+
         request.getRequestDispatcher("leaveHistory.jsp").forward(request, response);
 
     }
@@ -236,7 +198,7 @@ public class LeaveServlet extends HttpServlet {
             HttpServletResponse response)
             throws IOException {
 
-        int leaveId = Integer.parseInt(request.getParameter("leaveId"));
+        int leaveId= Integer.parseInt(request.getParameter("leaveId"));
 
         leaveDAO.approveLeave(leaveId);
 
