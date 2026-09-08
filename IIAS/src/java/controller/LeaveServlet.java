@@ -4,9 +4,6 @@ import dao.LeaveDAO;
 import model.LeaveApplication;
 import model.User;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +11,6 @@ import java.nio.file.Files;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -29,17 +25,10 @@ import javax.servlet.http.*;
 public class LeaveServlet extends HttpServlet {
 
     private LeaveDAO leaveDAO;
-    private Cloudinary cloudinary;
 
     @Override
     public void init() {
         leaveDAO = new LeaveDAO();
-        // Reads API credentials set in Render Environment Variables
-        cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", System.getenv("CLOUDINARY_CLOUD_NAME"),
-                "api_key", System.getenv("CLOUDINARY_API_KEY"),
-                "api_secret", System.getenv("CLOUDINARY_API_SECRET")
-        ));
     }
 
     @Override
@@ -104,6 +93,11 @@ public class LeaveServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
+        if (session == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
@@ -132,20 +126,41 @@ public class LeaveServlet extends HttpServlet {
         leave.setTotalDays(totalDays);
         leave.setReason(reason);
 
-        //Supporting Documnet Upload
-        
+        // Supporting Document Upload
         Part part = request.getPart("docs");
-        
-        Map docpath = cloudinary.uploader().upload(part, ObjectUtils.emptyMap());
 
         if (part != null && part.getSize() > 0) {
 
-            String uploadFolder = (String) docpath.get("secure_url");
-            
-            leave.setDocs(uploadFolder);
+            // Build a portable upload folder inside the webapp so path works across OS
+            String uploadFolder = request.getServletContext().getRealPath("/uploads/docs");
+
+            // Ensure folder exists
+            File folder = new File(uploadFolder);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            // Sanitize submitted filename
+            String submitted = part.getSubmittedFileName();
+            String safeName = (submitted != null) ? submitted.replaceAll("[^a-zA-Z0-9._-]", "_") : "file";
+            String fileName = System.currentTimeMillis() + "_" + safeName;
+
+            File file = new File(folder, fileName);
+
+            try (InputStream input = part.getInputStream()) {
+                Files.copy(input, file.toPath());
+            } catch (Exception e) {
+                e.printStackTrace();
+                // If upload fails, redirect with error instead of throwing HTTP 500
+                response.sendRedirect("leave.jsp?error=failed");
+                return;
+            }
+
+            String dbPath = "uploads/docs/" + fileName;
+            leave.setDocs(dbPath);
         }
 
-        //Personal Leave Validation
+        // Personal Leave Validation
         if ("Personal".equalsIgnoreCase(leaveType)) {
 
             int remaining
@@ -179,7 +194,16 @@ public class LeaveServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
+        if (session == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
         User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
 
         request.setAttribute("leaveHistory",leaveDAO.getLeaveHistory(user.getUserId()));
 
