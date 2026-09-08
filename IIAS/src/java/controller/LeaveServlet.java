@@ -132,17 +132,21 @@ public class LeaveServlet extends HttpServlet {
         leave.setTotalDays(totalDays);
         leave.setReason(reason);
 
-        //Supporting Documnet Upload
-        
+        //Supporting Document Upload
         Part part = request.getPart("docs");
         
-        Map docpath = cloudinary.uploader().upload(part, ObjectUtils.emptyMap());
-
+        // Check if file exists and has content before uploading
         if (part != null && part.getSize() > 0) {
-
-            String uploadFolder = (String) docpath.get("secure_url");
-            
-            leave.setDocs(uploadFolder);
+            try {
+                Map docpath = cloudinary.uploader().upload(part, ObjectUtils.emptyMap());
+                String uploadFolder = (String) docpath.get("secure_url");
+                leave.setDocs(uploadFolder);
+            } catch (Exception e) {
+                // Log the error and redirect with error message
+                System.err.println("Error uploading file to Cloudinary: " + e.getMessage());
+                response.sendRedirect("leave.jsp?error=upload_failed");
+                return;
+            }
         }
 
         //Personal Leave Validation
