@@ -4,6 +4,9 @@ import dao.LeaveDAO;
 import model.LeaveApplication;
 import model.User;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +14,7 @@ import java.nio.file.Files;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -25,10 +29,17 @@ import javax.servlet.http.*;
 public class LeaveServlet extends HttpServlet {
 
     private LeaveDAO leaveDAO;
+    private Cloudinary cloudinary;
 
     @Override
     public void init() {
         leaveDAO = new LeaveDAO();
+        // Reads API credentials set in Render Environment Variables
+        cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", System.getenv("CLOUDINARY_CLOUD_NAME"),
+                "api_key", System.getenv("CLOUDINARY_API_KEY"),
+                "api_secret", System.getenv("CLOUDINARY_API_SECRET")
+        ));
     }
 
     @Override
@@ -122,31 +133,16 @@ public class LeaveServlet extends HttpServlet {
         leave.setReason(reason);
 
         //Supporting Documnet Upload
-        String docpath = "C:/Users/Win10/Desktop/WebDev/IIAS/uploads/docs";
-
+        
         Part part = request.getPart("docs");
+        
+        Map docpath = cloudinary.uploader().upload(part, ObjectUtils.emptyMap());
 
         if (part != null && part.getSize() > 0) {
 
-            String fileName = System.currentTimeMillis() + "_" + part.getSubmittedFileName();
-
-            String uploadFolder = docpath;
-
-            File folder = new File(uploadFolder);
-
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
-            File file = new File(folder, fileName);
-
-            try (InputStream input = part.getInputStream()) {
-                Files.copy(input, file.toPath());
-            }
-
-            docpath = "uploads/docs/" + fileName;
+            String uploadFolder = (String) docpath.get("secure_url");
             
-            leave.setDocs(docpath);
+            leave.setDocs(uploadFolder);
         }
 
         //Personal Leave Validation
