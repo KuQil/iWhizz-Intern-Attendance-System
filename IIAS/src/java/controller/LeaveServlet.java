@@ -132,25 +132,30 @@ public class LeaveServlet extends HttpServlet {
         leave.setTotalDays(totalDays);
         leave.setReason(reason);
 
-        //Supporting Document Upload
-        Part part = request.getPart("docs");
-        
-        // Check if file exists and has content before uploading
-        if (part != null && part.getSize() > 0) {
-            // Convert Part to InputStream for Cloudinary upload
-            try (InputStream is = part.getInputStream()) {
-                // resource_type "auto" helps Cloudinary detect the file type from the stream
-                @SuppressWarnings("unchecked")
-                Map<String, Object> docpath = cloudinary.uploader().upload(is, ObjectUtils.asMap("resource_type", "auto"));
-                String uploadFolder = (String) docpath.get("secure_url");
-                leave.setDocs(uploadFolder);
-            } catch (Exception e) {
-                // Log the error and redirect with error message
-                System.err.println("Error uploading file to Cloudinary: " + e.getMessage());
-                response.sendRedirect("leave.jsp?error=upload_failed");
-                return;
-            }
-        }
+        // Supporting Document Upload
+Part part = request.getPart("docs");
+
+if (part != null && part.getSize() > 0) {
+    try (InputStream is = part.getInputStream()) {
+        // Read stream into byte array so Cloudinary can recognize the file payload
+        byte[] fileBytes = is.readAllBytes();
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> docpath = cloudinary.uploader().upload(
+            fileBytes, 
+            ObjectUtils.asMap("resource_type", "auto")
+        );
+
+        String uploadFolder = (String) docpath.get("secure_url");
+        leave.setDocs(uploadFolder);
+
+    } catch (Exception e) {
+        System.err.println("Error uploading file to Cloudinary: " + e.getMessage());
+        e.printStackTrace();
+        response.sendRedirect("leave.jsp?error=upload_failed");
+        return;
+    }
+}
 
         //Personal Leave Validation
         if ("Personal".equalsIgnoreCase(leaveType)) {
