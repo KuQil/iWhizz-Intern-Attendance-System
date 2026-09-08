@@ -18,31 +18,19 @@
             }
         }
     }
+    request.setAttribute("activeMenu", "dashboard");
 %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
         <title>Supervisor Dashboard</title>
-        <link rel="stylesheet" href="css/viewRecord.css">
-        <link rel="stylesheet" href="css/addUser.css">
-        <link rel="stylesheet" href="css/supervisorDashboard.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <%@ include file="snippets/supervisor-head.jspf" %>
     </head>
 
     <body class="dashboard-layout">
 
-        <div class="sidebar">
-            <div class="brand">Iwhizz<span>Attendance</span></div>
-            <div class="sidebar-menu">
-                <a href="SupervisorDashboardServlet" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                <a href="addUser.jsp"><i class="fa-solid fa-user-plus"></i> Add Intern</a>
-                <a href="ViewAllRecordsServlet"><i class="fa-solid fa-folder-open"></i> Attendance Logs</a>
-                <a href="supervisorLeave.jsp"><i class="fa-solid fa-folder-open"></i> Leave request</a>
-                
-                <a href="LogoutServlet" style="margin-top: auto; color: #dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-            </div>
-        </div>
+        <%@ include file="includes/sidebar.jspf" %>
 
         <div class="main-content">
             <div class="container">

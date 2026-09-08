@@ -1,0 +1,16 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%-- Usage: include this file in supervisor pages. Set attribute "activeMenu" (e.g., "dashboard","add","records","leave") if you want server-side active control. --%>
+<%
+  String active = (String) request.getAttribute("activeMenu");
+  if (active == null) active = "";
+%>
+<div class="sidebar">
+  <div class="brand">Iwhizz<span>Attendance</span></div>
+  <div class="sidebar-menu">
+    <a href="SupervisorDashboardServlet" class="<%= "dashboard".equals(active) ? "active" : "" %>"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+    <a href="addUser.jsp" class="<%= "add".equals(active) ? "active" : "" %>"><i class="fa-solid fa-user-plus"></i> Add Intern</a>
+    <a href="ViewAllRecordsServlet" class="<%= "records".equals(active) ? "active" : "" %>"><i class="fa-solid fa-folder-open"></i> Attendance Logs</a>
+    <a href="supervisorLeave.jsp" class="<%= "leave".equals(active) ? "active" : "" %>"><i class="fa-solid fa-clipboard-check"></i> Leave Request</a>
+    <a href="LogoutServlet" class="logout-btn" style="margin-top:auto;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+  </div>
+</div>

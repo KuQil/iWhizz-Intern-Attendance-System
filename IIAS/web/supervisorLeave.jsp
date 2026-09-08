@@ -18,6 +18,7 @@
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    request.setAttribute("activeMenu", "leave");
 %>
 
 <!DOCTYPE html>
@@ -25,27 +26,12 @@
     <head>
         <meta charset="UTF-8">
         <title>Supervisor - Manage Leave Applications</title>
-        <link rel="stylesheet" href="css/viewRecord.css">
-        <link rel="stylesheet" href="css/addUser.css">
-        <link rel="stylesheet" href="css/supervisorDashboard.css">
-        <link rel="stylesheet" href="css/SVLeave.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <%@ include file="snippets/supervisor-head.jspf" %>
 
     </head>
     <body>
 
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="brand">Iwhizz<span>Attendance</span></div>
-            <div class="sidebar-menu">
-                <a href="SupervisorDashboardServlet"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                <a href="addUser.jsp"><i class="fa-solid fa-user-plus"></i> Add Intern</a>
-                <a href="ViewAllRecordsServlet"><i class="fa-solid fa-folder-open"></i> Attendance Logs</a>
-                <a href="supervisorLeave.jsp" class="active"><i class="fa-solid fa-folder-open"></i> Leave request</a>
-
-                <a href="LogoutServlet" style="margin-top: auto; color: #dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-            </div>
-        </div>
+        <%@ include file="includes/sidebar.jspf" %>
 
         <!-- Main Content Wrapper -->
         <div class="main-content">
@@ -59,7 +45,7 @@
                     <i class="fa-solid fa-circle-check"></i> Leave application approved successfully. Attendance records created!
                 </div>
                 <% } else if ("rejected".equals(success)) { %>
-                <div class="alert-success" style="background-color: #f8d7da; color: #721c24;">
+                <div class="alert-error">
                     <i class="fa-solid fa-circle-xmark"></i> Leave application rejected.
                 </div>
                 <% } %>
@@ -81,7 +67,7 @@
                         </select>
                     </div>
 
-                    <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+                    <button class="btn btn-outline" onclick="resetFilters()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
                 </div>
 
                 <div class="table-responsive">
@@ -135,12 +121,12 @@
                                     <a href="SupervisorLeaveServlet?action=approve&leaveId=<%= leave.getLeaveId()%>" 
                                        class="btn-action btn-approve"
                                        onclick="return confirm('Approve this leave application? Attendance entries will be created.');">
-                                        <i class="fa-solid fa-check"></i> Approve
+                                         <i class="fa-solid fa-check"></i> Approve
                                     </a>
                                     <a href="SupervisorLeaveServlet?action=reject&leaveId=<%= leave.getLeaveId()%>" 
                                        class="btn-action btn-reject"
                                        onclick="return confirm('Reject this leave application?');">
-                                        <i class="fa-solid fa-xmark"></i> Reject
+                                         <i class="fa-solid fa-xmark"></i> Reject
                                     </a>
                                     <% } else { %>
                                     <span style="color: #6c757d; font-size: 12px;">Processed</span>

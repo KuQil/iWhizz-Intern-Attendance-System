@@ -7,6 +7,7 @@
         response.sendRedirect("login.jsp");
         return;
     }
+    request.setAttribute("activeMenu", "add");
 %>
 
 <!DOCTYPE html>
@@ -14,22 +15,12 @@
     <head>
         <meta charset="UTF-8">
         <title>Add Intern Account</title>
-        <link rel="stylesheet" href="css/addUser.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <%@ include file="snippets/supervisor-head.jspf" %>
     </head>
 
     <body>
 
-        <div class="sidebar">
-            <div class="brand">Iwhizz<span>Attendance</span></div>
-            <div class="sidebar-menu">
-                <a href="SupervisorDashboardServlet"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                <a href="addIntern.jsp" class="active"><i class="fa-solid fa-user-plus"></i> Add Intern</a>
-                <a href="ViewAllRecordsServlet"><i class="fa-solid fa-folder-open"></i> Attendance Logs</a>
-                <a href="supervisorLeave.jsp"><i class="fa-solid fa-folder-open"></i> Leave request</a>
-                <a href="LogoutServlet" style="margin-top: auto; color: #dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-            </div>
-        </div>
+        <%@ include file="includes/sidebar.jspf" %>
 
         <div class="main-content">
             <h1 class="page-title">Add Intern Account</h1>
@@ -63,7 +54,7 @@
                         <input type="date" name="endDate" required>
                     </div>
 
-                    <button type="submit" class="btn-submit">
+                    <button type="submit" class="btn btn-primary">
                         <i class="fa-solid fa-user-plus"></i> Add User Account
                     </button>
                 </form>
