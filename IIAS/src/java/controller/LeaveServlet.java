@@ -137,8 +137,11 @@ public class LeaveServlet extends HttpServlet {
         
         // Check if file exists and has content before uploading
         if (part != null && part.getSize() > 0) {
-            try {
-                Map docpath = cloudinary.uploader().upload(part, ObjectUtils.emptyMap());
+            // Convert Part to InputStream for Cloudinary upload
+            try (InputStream is = part.getInputStream()) {
+                // resource_type "auto" helps Cloudinary detect the file type from the stream
+                @SuppressWarnings("unchecked")
+                Map<String, Object> docpath = cloudinary.uploader().upload(is, ObjectUtils.asMap("resource_type", "auto"));
                 String uploadFolder = (String) docpath.get("secure_url");
                 leave.setDocs(uploadFolder);
             } catch (Exception e) {
