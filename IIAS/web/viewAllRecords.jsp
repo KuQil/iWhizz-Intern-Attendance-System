@@ -15,30 +15,19 @@
             }
         }
     }
+    request.setAttribute("activeMenu", "records");
 %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
         <title>All Attendance Logs</title>
-        <link rel="stylesheet" href="css/viewRecord.css">
-        <link rel="stylesheet" href="css/addUser.css">
-        <link rel="stylesheet" href="css/supervisorDashboard.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <%@ include file="snippets/supervisor-head.jspf" %>
     </head>
 
     <body class="dashboard-layout">
 
-        <div class="sidebar">
-            <div class="brand">Iwhizz<span>Attendance</span></div>
-            <div class="sidebar-menu">
-                <a href="SupervisorDashboardServlet"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                <a href="addUser.jsp"><i class="fa-solid fa-user-plus"></i> Add Intern</a>
-                <a href="ViewAllRecordsServlet" class="active"><i class="fa-solid fa-folder-open"></i> Attendance Logs</a>
-                <a href="supervisorLeave.jsp"><i class="fa-solid fa-folder-open"></i> Leave request</a>
-                <a href="LogoutServlet" style="margin-top: auto; color: #dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-            </div>
-        </div>
+        <%@ include file="includes/sidebar.jspf" %>
 
         <div class="main-content">
             <div class="container">
@@ -49,7 +38,7 @@
                     <div class="filter-section" style="display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap;">
                         <div style="display: flex; flex-direction: column; gap: 5px;">
                             <label for="nameFilter">Filter by Intern:</label>
-                            <select id="nameFilter" onchange="filterTable()">
+                            <select id="nameFilter" onchange="filterTable()" class="filter-select">
                                 <option value="">-- All Interns --</option>
                                 <% for (String name : uniqueNames) {%>
                                 <option value="<%= name.toLowerCase()%>"><%= name%></option>
@@ -59,11 +48,11 @@
 
                         <div style="display: flex; flex-direction: column; gap: 5px;">
                             <label for="dateFilter">Filter by Date:</label>
-                            <input type="date" id="dateFilter" onchange="filterTable()" style="padding: 9px 12px; border: 1px solid #cccccc; border-radius: 10px; outline: none;">
+                            <input type="date" id="dateFilter" onchange="filterTable()" class="filter-input">
                         </div>
 
                         <div style="display: flex; align-items: flex-end;">
-                            <button onclick="resetFilters()" style="padding: 10px 15px; background: #f5f5f5; border: 1px solid #ccc; border-radius: 10px; cursor: pointer; font-weight: 600;">Clear Filters</button>
+                            <button onclick="resetFilters()" class="btn btn-outline">Clear Filters</button>
                         </div>
                     </div>
 
