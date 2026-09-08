@@ -106,7 +106,7 @@
                                 <td style="max-width: 180px;"><%= leave.getReason()%></td>
                                 <td>
                                     <% if (leave.getDocs() != null && !leave.getDocs().trim().isEmpty()) {%>
-                                    <a href="${pageContext.request.contextPath}/<%= leave.getDocs()%>" target="_blank" style="color: #007bff;">
+                                    <a href="<%= leave.getDocs()%>" target="_blank" style="color: #007bff;">
                                         <i class="fa-solid fa-file"></i> View
                                     </a>
                                     <% } else { %>
