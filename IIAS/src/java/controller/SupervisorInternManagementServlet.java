@@ -6,6 +6,7 @@ import model.User;
 import model.Attendance;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -47,6 +48,8 @@ public class SupervisorInternManagementServlet extends HttpServlet {
             deleteIntern(request, response);
         } else if ("archive".equals(action)) {
             archiveIntern(request, response);
+        } else if ("update".equals(action)) {
+            updateIntern(request, response);
         } else {
             // Default: Show all interns
             showAllInterns(request, response);
@@ -124,6 +127,49 @@ public class SupervisorInternManagementServlet extends HttpServlet {
                 response.sendRedirect("SupervisorInternManagementServlet?success=deleted");
             } else {
                 response.sendRedirect("SupervisorInternManagementServlet?error=delete_failed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("SupervisorInternManagementServlet?error=invalid");
+        }
+    }
+
+    /**
+     * Update intern information
+     */
+    private void updateIntern(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int userId = Integer.parseInt(request.getParameter("userId"));
+            String fullName = request.getParameter("fullName");
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String startDateStr = request.getParameter("startDate");
+            String endDateStr = request.getParameter("endDate");
+            int leaveRemaining = Integer.parseInt(request.getParameter("leaveRemaining"));
+
+            // Create user object with updates
+            User updatedUser = new User();
+            updatedUser.setUserId(userId);
+            updatedUser.setFullName(fullName);
+            updatedUser.setUsername(username);
+            
+            // Only set password if provided
+            if (password != null && !password.trim().isEmpty()) {
+                updatedUser.setPassword(password);
+            }
+            
+            updatedUser.setInternshipStart(Date.valueOf(startDateStr));
+            updatedUser.setInternshipEnd(Date.valueOf(endDateStr));
+            updatedUser.setPersonalLeaveRemaining(leaveRemaining);
+
+            // Update user profile
+            boolean success = userDAO.updateUserProfile(updatedUser);
+
+            if (success) {
+                response.sendRedirect("SupervisorInternManagementServlet?success=updated");
+            } else {
+                response.sendRedirect("supervisorInternEdit.jsp?userId=" + userId + "&error=update_failed");
             }
         } catch (Exception e) {
             e.printStackTrace();
