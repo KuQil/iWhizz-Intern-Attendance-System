@@ -53,8 +53,6 @@ public class UserDAO {
                 user.setPersonalLeaveRemaining(resultSet.getInt("personal_leave_remaining"));
             }
 
-            connection.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -90,8 +88,6 @@ public class UserDAO {
             ps.setInt(7, months);
 
             int result = ps.executeUpdate();
-
-            connection.close();
 
             return result > 0;
 
@@ -164,8 +160,6 @@ public class UserDAO {
                 internsList.add(intern);
             }
 
-            connection.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -200,8 +194,6 @@ public class UserDAO {
                 user.setAccountStatus(rs.getString("account_status"));
             }
 
-            connection.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -220,7 +212,6 @@ public class UserDAO {
             ps.setInt(1, userId);
             
             int result = ps.executeUpdate();
-            connection.close();
             
             return result > 0;
 
@@ -242,7 +233,6 @@ public class UserDAO {
             ps.setInt(1, userId);
             
             int result = ps.executeUpdate();
-            connection.close();
             
             return result > 0;
 
