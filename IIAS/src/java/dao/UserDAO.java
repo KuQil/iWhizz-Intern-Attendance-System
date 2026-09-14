@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.User;
 
@@ -127,6 +129,122 @@ public class UserDAO {
 
             int rowsUpdated = ps.executeUpdate();
             return rowsUpdated > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Get all active interns (for supervisor management)
+     */
+    public List<User> getAllActiveInterns() {
+        List<User> internsList = new ArrayList<>();
+
+        try {
+            String sql = "SELECT * FROM users WHERE role = 'intern' AND account_status = 'active' ORDER BY full_name ASC";
+            
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User intern = new User();
+                intern.setUserId(rs.getInt("user_id"));
+                intern.setUsername(rs.getString("username"));
+                intern.setFullName(rs.getString("full_name"));
+                intern.setRole(rs.getString("role"));
+                intern.setOnField(rs.getBoolean("is_onfield"));
+                intern.setInternshipStart(rs.getDate("internship_start"));
+                intern.setInternshipEnd(rs.getDate("internship_end"));
+                intern.setPersonalLeaveRemaining(rs.getInt("personal_leave_remaining"));
+                intern.setAccountStatus(rs.getString("account_status"));
+                
+                internsList.add(intern);
+            }
+
+            connection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return internsList;
+    }
+
+    /**
+     * Get a specific user by ID
+     */
+    public User getUserById(int userId) {
+        User user = null;
+
+        try {
+            String sql = "SELECT * FROM users WHERE user_id = ?";
+            
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userId);
+            
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                user = new User();
+                user.setUserId(rs.getInt("user_id"));
+                user.setUsername(rs.getString("username"));
+                user.setFullName(rs.getString("full_name"));
+                user.setRole(rs.getString("role"));
+                user.setOnField(rs.getBoolean("is_onfield"));
+                user.setInternshipStart(rs.getDate("internship_start"));
+                user.setInternshipEnd(rs.getDate("internship_end"));
+                user.setPersonalLeaveRemaining(rs.getInt("personal_leave_remaining"));
+                user.setAccountStatus(rs.getString("account_status"));
+            }
+
+            connection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+
+    /**
+     * Archive a user account (set account_status to 'archived')
+     */
+    public boolean archiveUser(int userId) {
+        try {
+            String sql = "UPDATE users SET account_status = 'archived' WHERE user_id = ?";
+            
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userId);
+            
+            int result = ps.executeUpdate();
+            connection.close();
+            
+            return result > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete a user account permanently
+     */
+    public boolean deleteUser(int userId) {
+        try {
+            String sql = "DELETE FROM users WHERE user_id = ? AND role = 'intern'";
+            
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userId);
+            
+            int result = ps.executeUpdate();
+            connection.close();
+            
+            return result > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
