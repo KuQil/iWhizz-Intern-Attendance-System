@@ -6,6 +6,7 @@
   <div class="brand">Iwhizz<span>Attendance</span></div>
   <div class="sidebar-menu">
     <a href="SupervisorDashboardServlet" class="<%= "dashboard".equals(active) ? "active" : "" %>"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+    <a href="SupervisorInternManagementServlet" class="<%= "interns".equals(active) ? "active" : "" %>"><i class="fa-solid fa-users"></i> Manage Interns</a>
     <a href="addUser.jsp" class="<%= "add".equals(active) ? "active" : "" %>"><i class="fa-solid fa-user-plus"></i> Add Intern</a>
     <a href="ViewAllRecordsServlet" class="<%= "records".equals(active) ? "active" : "" %>"><i class="fa-solid fa-folder-open"></i> Attendance Logs</a>
     <a href="supervisorLeave.jsp" class="<%= "leave".equals(active) ? "active" : "" %>"><i class="fa-solid fa-clipboard-check"></i> Leave Request</a>
