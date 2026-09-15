@@ -154,6 +154,7 @@ table tbody td {
   font-size:12px;
   text-transform:capitalize;
   color:#fff;
+  background: #000;
 }
 .status-badge.present { background: var(--success); }
 .status-badge.late { background: #e24a4a; }
