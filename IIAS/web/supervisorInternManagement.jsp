@@ -68,7 +68,6 @@
                     <table class="table" id="internsTable">
                         <thead>
                             <tr>
-                                <th>Intern ID</th>
                                 <th>Full Name</th>
                                 <th>Username</th>
                                 <th>Internship Period</th>
@@ -82,7 +81,6 @@
                                     for (User intern : internsList) {
                             %>
                             <tr class="intern-row">
-                                <td><%= intern.getUserId()%></td>
                                 <td class="intern-name"><strong><%= intern.getFullName()%></strong></td>
                                 <td><%= intern.getUsername()%></td>
                                 <td>
