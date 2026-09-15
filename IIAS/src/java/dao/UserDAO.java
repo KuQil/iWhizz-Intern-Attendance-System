@@ -103,7 +103,7 @@ public class UserDAO {
         // If password is provided, update it; otherwise keep current password
         boolean updatePassword = (user.getPassword() != null && !user.getPassword().trim().isEmpty());
 
-        StringBuilder sql = new StringBuilder("UPDATE users SET username = ?, full_name = ?, internship_start = ?, internship_end = ? ");
+        StringBuilder sql = new StringBuilder("UPDATE users SET username = ?, full_name = ?, internship_start = ?, internship_end = ?, personal_leave_remaining = ? ");
         if (updatePassword) {
             sql.append(", password = ? ");
         }
@@ -115,12 +115,13 @@ public class UserDAO {
             ps.setString(2, user.getFullName());
             ps.setDate(3, user.getInternshipStart());
             ps.setDate(4, user.getInternshipEnd());
+            ps.setInt(5, user.getPersonalLeaveRemaining());
 
             if (updatePassword) {
-                ps.setString(5, user.getPassword());
-                ps.setInt(6, user.getUserId());
+                ps.setString(6, user.getPassword());
+                ps.setInt(7, user.getUserId());
             } else {
-                ps.setInt(5, user.getUserId());
+                ps.setInt(6, user.getUserId());
             }
 
             int rowsUpdated = ps.executeUpdate();
