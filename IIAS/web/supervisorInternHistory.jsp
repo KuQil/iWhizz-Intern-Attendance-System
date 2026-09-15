@@ -93,8 +93,8 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Clock In Time</th>
-                                <th>Clock Out Time</th>
                                 <th>Verification Selfie In</th>
+                                <th>Clock Out Time</th>
                                 <th>Verification Selfie Out</th>
                                 <th>Attendance Status</th>
                                 <th>Comments</th>
@@ -110,7 +110,6 @@
                             <tr class="attendance-row" data-status="<%= status%>">
                                 <td><strong><%= (att.getAttendanceDate() != null) ? dateFormat.format(att.getAttendanceDate()) : "N/A"%></strong></td>
                                 <td><%= (att.getClockIn() != null) ? timeFormat.format(att.getClockIn()) : "-"%></td>
-                                <td><%= (att.getClockOut() != null) ? timeFormat.format(att.getClockOut()) : "-"%></td>
                                 <td>
                                     <% if (imgIn != null && !imgIn.trim().isEmpty()) {%>
                                     <img src="<%= imgIn%>" alt="Selfie In" class="selfie-thumb" onclick="window.open(this.src)">
@@ -118,6 +117,7 @@
                                     <span class="no-img">No Image</span>
                                     <% }%>
                                 </td>
+                                <td><%= (att.getClockOut() != null) ? timeFormat.format(att.getClockOut()) : "-"%></td>
                                 <td>
                                     <% if (imgOut != null && !imgOut.trim().isEmpty()) {%>
                                     <img src="<%= imgOut%>" alt="Selfie Out" class="selfie-thumb" onclick="window.open(this.src)">
