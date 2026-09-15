@@ -147,6 +147,7 @@ table tbody td {
 
 /* Badges / status */
 .status-badge {
+  background: #8e8e93;
   display:inline-block;
   padding:6px 10px;
   border-radius:999px;
@@ -154,10 +155,10 @@ table tbody td {
   font-size:12px;
   text-transform:capitalize;
   color:#fff;
-  background: #000;
 }
 .status-badge.present { background: var(--success); }
-.status-badge.late { background: #e24a4a; }
+.status-badge.absent { background: #FF0000}
+.status-badge.late { background: #FF9500; }
 .status-badge.pending { background: #ffc107; color:#222; }
 .badge-approved { background: var(--success); color:#fff; padding:6px 10px; border-radius:8px; }
 .badge-pending { background:#ffc107; color:#222; padding:6px 10px; border-radius:8px; }
