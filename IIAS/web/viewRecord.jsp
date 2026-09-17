@@ -65,6 +65,7 @@
         <div class="container">
             <div class="record-card">
                 <h1>Attendance Records</h1>
+                <a class="back-link" href="dashboard.jsp" style="display: inline-block; margin-top: 15px;">← Back To Dashboard</a>
 
                 <!-- Wrapped in a form to allow submitting comments to your server -->
                 <form action="UpdateAttendanceCommentServlet" method="post">
@@ -143,7 +144,6 @@
                 </form>
 
                 <div style="clear: both;"></div>
-                <a class="back-link" href="dashboard.jsp" style="display: inline-block; margin-top: 15px;">← Back To Dashboard</a>
 
             </div> 
         </div>

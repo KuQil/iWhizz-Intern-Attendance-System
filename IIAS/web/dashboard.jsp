@@ -36,19 +36,17 @@
                     <div id="currentDate">--</div>
                     </p>
                 </div>
-                <button class="menu-btn" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-            </div>
-
-            <div id="menu" class="dropdown-menu" style="display: none;">
-                <ul>
-                    <li>
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="drop-content">
                         <a href="editAcc.jsp">
                             <i class="fa-solid fa-user-pen"></i> Edit Account
                         </a>
-                    </li>
-                </ul>
+                    </div>
+                </div>
+
             </div>
 
             <a href="attendance.jsp" class="dashboard-card">
@@ -65,7 +63,6 @@
             <a href="LeaveServlet" class="dashboard-card">
                 <i class="fa-regular fa-calendar"></i>
                 <h3>Leave Application</h3>
-                <p>Days Left: <%= user.getPersonalLeaveRemaining()%></p>
             </a>
 
             <a href="AttendanceHistory" class="dashboard-card">
@@ -82,14 +79,6 @@
         </div>
 
         <script>
-            function toggleMenu() {
-                let menu = document.getElementById("menu");
-                if (menu.style.display === "block") {
-                    menu.style.display = "none";
-                } else {
-                    menu.style.display = "block";
-                }
-            }
 
             function updateClock() {
                 let now = new Date();

@@ -156,9 +156,9 @@ table tbody td {
   text-transform:capitalize;
   color:#fff;
 }
-.status-badge.present { background: var(--success); }
-.status-badge.absent { background: #FF0000}
-.status-badge.late { background: #FF9500; }
+.status-badge.present { background-color: #e8f5e9; color: #2e7d32; }
+.status-badge.absent { background-color: #ffebee; color: #c62828;}
+.status-badge.late { background-color: #fff3e0; color: #ef6c00; }
 .status-badge.pending { background: #ffc107; color:#222; }
 .badge-approved { background: var(--success); color:#fff; padding:6px 10px; border-radius:8px; }
 .badge-pending { background:#ffc107; color:#222; padding:6px 10px; border-radius:8px; }

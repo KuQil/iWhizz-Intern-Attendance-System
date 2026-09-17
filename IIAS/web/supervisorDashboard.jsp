@@ -65,7 +65,6 @@
                                         <span class="no-img">No Image</span>
                                         <% }%>
                                     </td>
-                                    <td><%= (attendance.getClockOut() != null) ? attendance.getClockOut().toString().substring(11, 16) : "-"%></td>
                                     <td>
                                         <span class="status-badge <%= status%>">
                                             <%= status%>
