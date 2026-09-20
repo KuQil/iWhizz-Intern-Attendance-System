@@ -89,8 +89,6 @@ public class UserDAO {
 
             int result = ps.executeUpdate();
 
-            return result > 0;
-
             String csql = "INSERT INTO attendance (user_id, attendance_date, attendance_status)"
             + "SELECT u.user_id," 
             + "CURDATE() AS attendance_date, "
@@ -106,6 +104,8 @@ public class UserDAO {
             ps = connection.prepareStatement(csql);
 
             result = ps.executeUpdate();
+
+            return result > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
