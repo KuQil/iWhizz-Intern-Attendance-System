@@ -91,6 +91,22 @@ public class UserDAO {
 
             return result > 0;
 
+            String csql = "INSERT INTO attendance (user_id, attendance_date, attendance_status)"
+            + "SELECT u.user_id," 
+            + "CURDATE() AS attendance_date, "
+            + "'Absent' AS attendance_status"
+            + "FROM users u"
+            + "LEFT JOIN attendance a "
+            + "ON u.user_id = a.user_id "
+            + "AND a.attendance_date = CURDATE()"
+            + "WHERE a.user_id IS NULL "
+            + "AND u.role = 'intern' "
+            + "AND u.account_status = 'Active';";
+
+            ps = connection.prepareStatement(csql);
+
+            result = ps.executeUpdate();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
