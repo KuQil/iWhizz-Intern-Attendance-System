@@ -63,7 +63,7 @@ public class SupervisorInternManagementServlet extends HttpServlet {
     }
 
     /**
-     * Display all active interns
+     *test Display all active interns
      */
     private void showAllInterns(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
