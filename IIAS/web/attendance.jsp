@@ -16,7 +16,6 @@
     if (clockOutPrevSession != null){
         attendance = dao.clockOutCheck(user.getUserId());
     }
-    
 
     String error = request.getParameter("error");
     String success = request.getParameter("success");
@@ -30,6 +29,16 @@
         <title>Clock In</title>
         <link rel="stylesheet" href="css/attendance.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <!-- Include tracking.js for lightweight face detection -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/tracking-min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/data/face-min.js"></script>
+        <style>
+            /* Mirror effect for camera feed and preview image */
+            #video, #preview {
+                transform: scaleX(-1);
+                -webkit-transform: scaleX(-1);
+            }
+        </style>
     </head>
 
     <body>
@@ -82,14 +91,16 @@
                     <input type="hidden" id="latitude" name="latitude">
                     <input type="hidden" id="longitude" name="longitude">
 
-                    <div class="camera-container">
+                    <div class="camera-container" style="position: relative; overflow: hidden;">
                         <video id="video" autoplay playsinline style="width: 100%; border-radius: 8px; background: #000;"></video>
                         <canvas id="canvas" style="display:none;"></canvas>
                         <img id="preview" style="display:none; width: 100%; border-radius: 8px;">
                         <input type="hidden" id="selfie" name="selfie">
 
+                        <p id="faceStatus" style="font-size: 13px; font-weight: bold; color: #d9534f; margin: 8px 0;">Looking for a face...</p>
+
                         <br>
-                        <button type="button" id="captureBtn" class="camera-btn" onclick="captureSelfie()">Take Selfie</button>
+                        <button type="button" id="captureBtn" class="camera-btn" onclick="captureSelfie()" disabled style="opacity: 0.6; cursor: not-allowed;">Take Selfie</button>
                         <button type="button" id="retakeBtn" class="camera-btn" onclick="startCamera()" style="display: none; background-color: #6c757d;">Retake Selfie</button>
                     </div>
 
@@ -116,14 +127,16 @@
                     <input type="hidden" id="longitude" name="longitude">
                     <input type="hidden" id="attID" name="attID" value="<%=attendance.getAttendanceId()%>">
 
-                    <div class="camera-container">
+                    <div class="camera-container" style="position: relative; overflow: hidden;">
                         <video id="video" autoplay playsinline style="width: 100%; border-radius: 8px; background: #000;"></video>
                         <canvas id="canvas" style="display:none;"></canvas>
                         <img id="preview" style="display:none; width: 100%; border-radius: 8px;">
                         <input type="hidden" id="selfie" name="selfie">
 
+                        <p id="faceStatus" style="font-size: 13px; font-weight: bold; color: #d9534f; margin: 8px 0;">Looking for a face...</p>
+
                         <br>
-                        <button type="button" id="captureBtn" class="camera-btn" onclick="captureSelfie()">Take Selfie</button>
+                        <button type="button" id="captureBtn" class="camera-btn" onclick="captureSelfie()" disabled style="opacity: 0.6; cursor: not-allowed;">Take Selfie</button>
                         <button type="button" id="retakeBtn" class="camera-btn" onclick="startCamera()" style="display: none; background-color: #6c757d;">Retake Selfie</button>
                     </div>
 
@@ -151,11 +164,13 @@
 
         <script>
             let localStream = null;
+            let trackerTask = null;
             const video = document.getElementById("video");
             const preview = document.getElementById("preview");
             const captureBtn = document.getElementById("captureBtn");
             const retakeBtn = document.getElementById("retakeBtn");
             const selfieInput = document.getElementById("selfie");
+            const faceStatus = document.getElementById("faceStatus");
 
             function updateTime() {
                 let now = new Date();
@@ -163,19 +178,28 @@
                     hour: 'numeric',
                     minute: '2-digit'
                 });
-                
-                
             }
 
             updateTime();
             setInterval(updateTime, 1000);
 
-            // Turn on webcam and clear preview UI state
+            // Turn on webcam, start stream, and initialize face detection tracking
             function startCamera() {
                 selfieInput.value = "";
                 preview.style.display = "none";
                 preview.src = "";
                 retakeBtn.style.display = "none";
+                
+                captureBtn.style.display = "inline-block";
+                captureBtn.disabled = true;
+                captureBtn.style.opacity = "0.6";
+                captureBtn.style.cursor = "not-allowed";
+
+                if (faceStatus) {
+                    faceStatus.style.display = "block";
+                    faceStatus.innerText = "Looking for a face...";
+                    faceStatus.style.color = "#d9534f";
+                }
 
                 if (video) {
                     video.style.display = "block";
@@ -183,7 +207,7 @@
                             .then(function (stream) {
                                 localStream = stream;
                                 video.srcObject = stream;
-                                captureBtn.style.display = "inline-block";
+                                initFaceTracking();
                             })
                             .catch(function () {
                                 alert("Unable to access camera.");
@@ -191,14 +215,48 @@
                 }
             }
 
-            // Kill active media hardware tracks
+            // Initialize tracking.js face detector
+            function initFaceTracking() {
+                if (!tracking) return;
+                
+                let tracker = new tracking.ObjectTracker('face');
+                tracker.setInitialScale(4);
+                tracker.setStepSize(2);
+                tracker.setEdgesDensity(0.1);
+
+                trackerTask = tracking.track('#video', tracker, { camera: true });
+
+                tracker.on('track', function(event) {
+                    if (event.data.length > 0) {
+                        captureBtn.disabled = false;
+                        captureBtn.style.opacity = "1";
+                        captureBtn.style.cursor = "pointer";
+                        faceStatus.innerText = "Face detected! Ready to take selfie.";
+                        faceStatus.style.color = "#2e7d32";
+                    } else {
+                        captureBtn.disabled = true;
+                        captureBtn.style.opacity = "0.6";
+                        captureBtn.style.cursor = "not-allowed";
+                        faceStatus.innerText = "No face detected. Position your face in view.";
+                        faceStatus.style.color = "#d9534f";
+                    }
+                });
+            }
+
+            // Kill active media hardware tracks and stop face tracker
             function stopCamera() {
+                if (trackerTask) {
+                    trackerTask.stop();
+                }
                 if (localStream) {
                     localStream.getTracks().forEach(track => track.stop());
                 }
                 if (video) {
                     video.style.display = "none";
                     video.srcObject = null;
+                }
+                if (faceStatus) {
+                    faceStatus.style.display = "none";
                 }
             }
 
@@ -208,6 +266,11 @@
                 canvas.height = video.videoHeight;
 
                 const ctx = canvas.getContext("2d");
+                
+                // Flip the canvas context horizontally to match the mirror view
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
                 let image = canvas.toDataURL("image/jpeg");
@@ -257,14 +320,13 @@
                     return;
                 }
 
-                // Check if current time is before 5:00 PM (17:00)
                 let now = new Date();
                 let hours = now.getHours();
 
                 if (hours < 17) {
                     let proceed = confirm("It is currently before 5:00 PM. Are you sure you want to clock out early?");
                     if (!proceed) {
-                        return; // Cancel submission if user selects 'Cancel'
+                        return;
                     }
                 }
 
@@ -275,7 +337,6 @@
 
                 navigator.geolocation.getCurrentPosition(
                         function (position) {
-                            // Find the active clockOutForm hidden inputs dynamically
                             let form = document.getElementById("clockOutForm");
                             form.querySelector("#latitude").value = position.coords.latitude;
                             form.querySelector("#longitude").value = position.coords.longitude;
@@ -288,4 +349,4 @@
             }
         </script>
     </body>
-</html> 
+</html>

@@ -193,8 +193,13 @@ body {
 
     /* Keep button at the bottom of the screen */
     .clock-btn, .completed {
-        margin-top: auto; 
+        margin-top: auto;
         height: 55px;
         font-size: 18px;
+    }
+
+    #video, #preview {
+        transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
     }
 }
