@@ -44,7 +44,6 @@
                                 <tr>
                                     <th>Intern Name</th> <th>Clock In Time</th>
                                     <th>Verification Selfie</th>
-                                    <th>Clock Out Time</th>
                                     <th>Status Badge</th>
                                 </tr>
                             </thead>

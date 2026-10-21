@@ -50,8 +50,8 @@ public class AttendanceServlet extends HttpServlet {
     //5.4131091113581755, 103.0854658632978 oma
     //5.410929577902006, 103.08854473100098 ibh12
     //5.738359662486741, 102.50908217108032 hjt
-    private static final double OFFICE_LAT = 5.334279365266907;
-    private static final double OFFICE_LON = 103.14771422427407;
+    private static final double OFFICE_LAT = 5.734034836476247;
+    private static final double OFFICE_LON = 102.49390592638133;
     private static final int ALLOWED_RADIUS = 20;
     private static final String UPLOAD_DIR = "C:/Users/Win10/Desktop/WebDev/IIAS/uploads/selfies";
 
